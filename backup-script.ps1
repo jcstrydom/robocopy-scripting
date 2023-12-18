@@ -4,7 +4,7 @@ param(
 )
 
 # Simple YAML parsing function
-function Parse-Yaml {
+function ParseYaml {
     param([string]$yamlPath)
 
     $yamlContent = Get-Content $yamlPath -Raw
@@ -28,7 +28,7 @@ function Parse-Yaml {
 
 
 # Parse the YAML file
-$yamlData = Parse-Yaml -yamlPath $yamlFile
+$yamlData = ParseYaml -yamlPath $yamlFile
 $backupRoot = $yamlData["destination"]
 $sources = $yamlData["sources"]
 
