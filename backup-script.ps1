@@ -4,16 +4,17 @@ param(
     [string]$logDirectory # Directory where logs should be stored
 )
 
+$date = Get-Date -Format "yyyyMMdd"
+$logFile = Join-Path $logDirectory "BackupLog_$date.txt"
+
 function Backup-Directory {
     param(
         [string]$sourcePath,
-        [string]$destPath
+        [string]$destPath,
+        [string]$logFile
     )
 
-    $timestamp = Get-Date -Format "yyyyMMddHHmmss"
-    $logFile = Join-Path $logDirectory "BackupLog_$timestamp.txt"
-
-    Robocopy $sourcePath $destPath /s /xj /r:2 /w:2 /mt:8 /z /LOG:$logFile
+    Robocopy $sourcePath $destPath /s /xj /r:2 /w:2 /mt:8 /z /LOG+:$logFile
 }
 
 # Read the list of directories from the input file
@@ -23,5 +24,5 @@ foreach ($dir in $directories) {
     $sourcePath = $dir
     $destPath = $dir -replace '^[A-Za-z]:', $backupRoot
 
-    Backup-Directory -sourcePath $sourcePath -destPath $destPath
+    Backup-Directory -sourcePath $sourcePath -destPath $destPath -logFile $logFile
 }
