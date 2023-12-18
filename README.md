@@ -29,7 +29,7 @@ sources:
 
 As an example:
 ```
-.\backup-script.ps1 -inputFile "dirs-to-backup.txt" -backupRoot "D:\C-Drive\" -logDirectory ".\logs\"
+.\backup-script.ps1 -yamlFile "dirs-to-backup.yml" -logDirectory ".\logs\"
 ```
 
 ## Input Parameters
