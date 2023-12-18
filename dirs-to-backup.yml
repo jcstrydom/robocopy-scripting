@@ -1,0 +1,4 @@
+destination: "C:\backup-test\bck-destination"
+sources:
+  - "C:\backup-test\bck-source\my-backup"
+  - "C:\backup-test\bck-source\subdir2"
