@@ -38,7 +38,7 @@ Write-Host "Destination Folder: $backupRoot"
 # Print each source directory on a new line
 Write-Host "Source Directories:"
 foreach ($source in $sources) {
-    Write-Host $source
+    Write-Host "  $source"
 }
 
 
@@ -57,5 +57,7 @@ function Backup-Directory {
 
 foreach ($sourcePath in $sources) {
     $destPath = $sourcePath -replace '^[A-Za-z]:', $backupRoot
+    Write-Host ""
+    Write-Host "Busy with '$sourcePath' ..."
     Backup-Directory -sourcePath $sourcePath -destPath $destPath -logFile $logFile
 }
