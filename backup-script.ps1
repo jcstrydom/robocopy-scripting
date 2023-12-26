@@ -45,10 +45,11 @@ function Backup-Directory {
     param(
         [string]$sourcePath,
         [string]$destPath,
-        [string]$logFile
+        [string]$logFile,
+        [string]$additionalFlags = ""
     )
 
-    Robocopy $sourcePath $destPath /s /xj /r:2 /w:2 /mt:8 /z /LOG+:$logFile
+    Robocopy $sourcePath $destPath /s /xj /r:2 /w:2 /mt:8 /z /LOG+:$logFile $additionalFlags
 }
 
 function Backup-Subdirectories {
@@ -58,17 +59,24 @@ function Backup-Subdirectories {
         [string]$logFile
     )
 
-    # Get all subdirectories of the current directory
+    # Back up only files in the root of the current directory
+    $rootDestPath = $parentDirectory -replace '^[A-Za-z]:', $backupRoot
+    
+    # Get and back up all subdirectories of the current directory
     $subDirs = Get-ChildItem -Path $parentDirectory -Directory
-
+    
     foreach ($subDir in $subDirs) {
         $sourcePath = $subDir.FullName
         $destPath = $sourcePath -replace '^[A-Za-z]:', $backupRoot
-
+        
         Write-Host ""
-        Write-Host "Busy with: '$sourcePath' --> '$destPath'..."
+        Write-Host "Backing up subdirectory: '$sourcePath' --> '$destPath'..."
         Backup-Directory -sourcePath $sourcePath -destPath $destPath -logFile $logFile
     }
+    
+    Write-Host ""
+    Write-Host "Backing up files in root directory: '$parentDirectory' --> '$rootDestPath'..."
+    Backup-Directory -sourcePath $parentDirectory -destPath $rootDestPath -logFile $logFile
 }
 
 foreach ($sourcePath in $sources) {

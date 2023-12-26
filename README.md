@@ -7,6 +7,8 @@ This PowerShell script performs backups of subdirectories based on a list of par
 - PowerShell environment.
 - A YAML file specifying source directories, a destination directory, and a log directory.
 
+> ***INFO*** - for efficiency subdirectories of the source directories are identified and copied first, after which the entire source directory is copied.
+
 ## YAML File Format
 The YAML file should be structured as follows:
 ```yaml
