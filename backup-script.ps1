@@ -1,9 +1,7 @@
 param(
-    [string]$yamlFile, # Path to the YAML file
-    [string]$logDirectory # Directory where logs should be stored
+    [string]$yamlFile # Path to the YAML file
 )
 
-# Simple YAML parsing function
 function ParseYaml {
     param([string]$yamlPath)
 
@@ -25,12 +23,11 @@ function ParseYaml {
     return $parsedYaml
 }
 
-
-
 # Parse the YAML file
 $yamlData = ParseYaml -yamlPath $yamlFile
 $backupRoot = $yamlData["destination"]
 $sources = $yamlData["sources"]
+$logDirectory = $yamlData["logsdirectory"]
 
 # Print the destination folder
 Write-Host "Destination Folder: $backupRoot"
@@ -40,7 +37,6 @@ Write-Host "Source Directories:"
 foreach ($source in $sources) {
     Write-Host "  $source"
 }
-
 
 $date = Get-Date -Format "yyyyMMdd_HHmmss"
 $logFile = Join-Path $logDirectory "BackupLog_$date.txt"
@@ -55,9 +51,26 @@ function Backup-Directory {
     Robocopy $sourcePath $destPath /s /xj /r:2 /w:2 /mt:8 /z /LOG+:$logFile
 }
 
+function Backup-Subdirectories {
+    param(
+        [string]$parentDirectory,
+        [string]$backupRoot,
+        [string]$logFile
+    )
+
+    # Get all subdirectories of the current directory
+    $subDirs = Get-ChildItem -Path $parentDirectory -Directory
+
+    foreach ($subDir in $subDirs) {
+        $sourcePath = $subDir.FullName
+        $destPath = $sourcePath -replace '^[A-Za-z]:', $backupRoot
+
+        Write-Host ""
+        Write-Host "Busy with: '$sourcePath' --> '$destPath'..."
+        Backup-Directory -sourcePath $sourcePath -destPath $destPath -logFile $logFile
+    }
+}
+
 foreach ($sourcePath in $sources) {
-    $destPath = $sourcePath -replace '^[A-Za-z]:', $backupRoot
-    Write-Host ""
-    Write-Host "Busy with '$sourcePath' ..."
-    Backup-Directory -sourcePath $sourcePath -destPath $destPath -logFile $logFile
+    Backup-Subdirectories -parentDirectory $sourcePath -backupRoot $backupRoot -logFile $logFile
 }
